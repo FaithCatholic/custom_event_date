@@ -80,13 +80,13 @@ class CustomDateRangeAllDayDefaultFormatter extends FormatterBase {
         if ($all_day) {
           $markup = $start_month . $start_day;
         } else {
-          $markup = $start_month .' '. $start_day .' '. $start_time .'<span class="sep to"> to </span>'. $end_time;
+          $markup = $start_month .' '. $start_day .' <div class="secondary">'. $start_time .'<span class="sep to"> to </span>'. $end_time .'</div>';
         }
       } else {
         if ($all_day) {
-          $markup = $start_month .' '. $start_day .'<span class="sep to"> to </span>'. $end_month .' '. $end_day;
+          $markup = $start_month .' '. $start_day .'<div class="secondary"><span class="sep to"> to </span></div>'. $end_month .' '. $end_day;
         } else {
-          $markup = $start_month .' '. $start_day .'<span class="start sep at"> at </span>'. $start_time .'<span class="sep to"> to </span>'. $end_month .' '. $end_day .'<span class="end sep at"> at </span>'. $end_time;
+          $markup = $start_month .' '. $start_day .'<div class="secondary"><span class="start sep at"> at </span>'. $start_time .'<span class="sep to"> to </span></div>'. $end_month .' '. $end_day .'<div class="secondary"><span class="end sep at"> at </span>'. $end_time .'</div>';
         }
       }
 
