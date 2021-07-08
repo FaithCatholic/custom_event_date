@@ -57,7 +57,13 @@ class CustomDateRangeAllDayDefaultFormatter extends FormatterBase {
 
     foreach ($items as $delta => $item) {
       list($start_date, $start_time) = explode('T', $this->viewValue($item));
-      list($end_date, $end_time) = explode('T', $this->viewEndValue($item));
+
+      if (method_exists($this, 'viewEndValue') && $this->viewEndValue($item)) {
+        list($end_date, $end_time) = explode('T', $this->viewEndValue($item));
+        // dsm($end_date);
+        // dsm($end_time);
+        // dsm($this->viewEndValue($item));
+      }
 
       if ($start_time == '00:00:00' && $end_time == '23:59:59') {
         $all_day = TRUE;
@@ -66,27 +72,45 @@ class CustomDateRangeAllDayDefaultFormatter extends FormatterBase {
       }
 
       $start_datetime = strtotime($this->viewValue($item));
-      $end_datetime = strtotime($this->viewEndValue($item));
+
+      if (method_exists($this, 'viewEndValue')) {
+        $end_datetime = strtotime($this->viewEndValue($item));
+      }
 
       $start_month = '<span class="start month">'. date('M', $start_datetime) .'</span>';
       $start_day = '<span class="start day">'. date('j', $start_datetime) .'</span>';
       $start_time = '<span class="start time">'. date('g:ia', $start_datetime). '</span>';
 
-      $end_month = '<span class="end month">'. date('M', $end_datetime) .'</span>';
-      $end_day = '<span class="end day">'. date('j', $end_datetime) .'</span>';
-      $end_time = '<span class="end time">'. date('g:ia', $end_datetime) .'</span>';
+      if ($end_date && $end_time) {
+        $end_month = '<span class="end month">'. date('M', $end_datetime) .'</span>';
+        $end_day = '<span class="end day">'. date('j', $end_datetime) .'</span>';
+        $end_time = '<span class="end time">'. date('g:ia', $end_datetime) .'</span>';
+      }
 
       if ($start_date == $end_date) {
         if ($all_day) {
-          $markup = $start_month . $start_day;
+          $markup = $start_month .' '. $start_day;
+          $markup .= '<div class="secondary">All Day</div>';
         } else {
-          $markup = $start_month .' '. $start_day .' <div class="secondary">'. $start_time .'<span class="sep to"> to </span>'. $end_time .'</div>';
+          $markup = $start_month .' '. $start_day .' <div class="secondary">'. $start_time;
+          if ($end_time) {
+            $markup .= '<span class="sep to"> to </span>'. $end_time;
+          }
+          $markup .= '</div>';
         }
       } else {
         if ($all_day) {
-          $markup = $start_month .' '. $start_day .'<div class="secondary"><span class="sep to"> to </span></div>'. $end_month .' '. $end_day;
+          $markup = $start_month .' '. $start_day;
+          if ($end_month && $end_day) {
+            $markup .= '<div class="secondary"><span class="sep to"> to </span></div>'. $end_month .' '. $end_day;
+          }
         } else {
-          $markup = $start_month .' '. $start_day .'<div class="secondary"><span class="start sep at"> at </span>'. $start_time .'<span class="sep to"> to </span></div>'. $end_month .' '. $end_day .'<div class="secondary"><span class="end sep at"> at </span>'. $end_time .'</div>';
+          $markup = $start_month .' '. $start_day .'<div class="secondary"><span class="start sep at"> at </span>'. $start_time;
+          if ($end_month && $end_day && $end_time) {
+            $markup .= '<span class="sep to"> to </span></div>'. $end_month .' '. $end_day .'<div class="secondary"><span class="end sep at"> at </span>'. $end_time .'</div>';
+          } else {
+            $markup .= '</div>';
+          }
         }
       }
 
