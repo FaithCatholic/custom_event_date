@@ -1,5 +1,5 @@
 name: 'Custom event date'
 type: module
 description: 'Provides a custom event date.'
-core: 8.x
+core_version_requirement: ^8 || ^9
 package: 'Custom'
