@@ -7,6 +7,7 @@ use Drupal\Core\Field\FieldItemInterface;
 use Drupal\Core\Field\FieldItemListInterface;
 use Drupal\Core\Field\FormatterBase;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Datetime\DrupalDateTime;
 
 /**
  * Plugin implementation of the 'custom_daterange_all_day_default' formatter.
@@ -20,7 +21,6 @@ use Drupal\Core\Form\FormStateInterface;
  * )
  */
 class CustomDateRangeAllDayDefaultFormatter extends FormatterBase {
-
   /**
    * {@inheritdoc}
    */
@@ -50,14 +50,38 @@ class CustomDateRangeAllDayDefaultFormatter extends FormatterBase {
   }
 
   /**
+   * {@inheritDoc}
+   */
+  public function getTimeOffset($timezone, $map) {
+    foreach($map as $key => $value) {
+      if ($key == $timezone) {
+        return $value;
+      }
+    }
+    return null;
+  } 
+
+  /**
    * {@inheritdoc}
    */
   public function viewElements(FieldItemListInterface $items, $langcode) {
     $elements = [];
+    
+   //php sort of map/array for timezones 
+   $map = [
+      'EDT' => '-4 hours',
+      'EST' => '-5 hours',
+      'CDT' => '-5 hours',
+      'CST' => '-6 hours',
+      'MDT' => '-6 hours',
+      'MST' => '-7 hours',
+      'PDT' => '-7 hours',
+      'PST' =>  '-8 hours',
+    ]; 
+    
 
     foreach ($items as $delta => $item) {
       list($start_date, $start_time) = explode('T', $this->viewValue($item));
-
       if (method_exists($this, 'viewEndValue') && $this->viewEndValue($item)) {
         list($end_date, $end_time) = explode('T', $this->viewEndValue($item));
         // dsm($end_date);
@@ -70,21 +94,33 @@ class CustomDateRangeAllDayDefaultFormatter extends FormatterBase {
       } else {
         $all_day = FALSE;
       }
+      
+      //creates DrupalDateTime objects for date initial and end
+      $date = new DrupalDateTime($this->viewValue($item));
+      $dateEnd = new DrupalDateTime($this->viewEndValue($item));
+      $timezone = $date->format('T'); //grabs timezone from object
+      
+      //calls function to correct the time difference
+      $date->modify(getTimeOffset($timezone, $map)); 
+      $dateEnd->modify(getTimeOffset($timezone, $map));
 
+      //redundant with new implement
+      /*
       $start_datetime = strtotime($this->viewValue($item));
 
       if (method_exists($this, 'viewEndValue')) {
         $end_datetime = strtotime($this->viewEndValue($item));
-      }
+      }*/
 
-      $start_month = '<span class="start month">'. date('M', $start_datetime) .'</span>';
-      $start_day = '<span class="start day">'. date('j', $start_datetime) .'</span>';
-      $start_time = '<span class="start time">'. date('g:ia', $start_datetime). '</span>';
+      $start_month = '<span class="start month">'. $date->format('M') .'</span>';
+      $start_day = '<span class ="start day">'. $date->format('d') .'</span>';
+      $start_time = '<span class ="start time">'. $date->format('g:iA T'). '</span>';
+
 
       if ($end_date && $end_time) {
-        $end_month = '<span class="end month">'. date('M', $end_datetime) .'</span>';
-        $end_day = '<span class="end day">'. date('j', $end_datetime) .'</span>';
-        $end_time = '<span class="end time">'. date('g:ia', $end_datetime) .'</span>';
+        $end_month = $dateEnd->format('M');
+        $end_day = $dateEnd->format('d');
+        $end_time = $dateEnd->format('g:iA T'); 
       }
 
       if ($start_date == $end_date) {
@@ -147,3 +183,5 @@ class CustomDateRangeAllDayDefaultFormatter extends FormatterBase {
   }
 
 }
+
+  
