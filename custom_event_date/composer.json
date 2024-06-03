@@ -1,0 +1,13 @@
+{
+    "name": "faithcatholic/custom_event_date",
+    "type": "drupal-module",
+    "description": "Provides a custom event date.",
+    "keywords": [
+    ],
+    "homepage": "https://www.drupal.org/project/custom_event_date",
+    "minimum-stability": "dev",
+    "support": {
+        "issues": "https://www.drupal.org/project/issues/custom_event_date",
+        "source": "http://cgit.drupalcode.org/custom_event_date"
+    }
+}
