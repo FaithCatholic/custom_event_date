@@ -101,8 +101,8 @@ class CustomDateRangeAllDayDefaultFormatter extends FormatterBase {
       $timezone = $date->format('T'); //grabs timezone from object
       
       //calls function to correct the time difference
-      $date->modify(getTimeOffset($timezone, $map)); 
-      $dateEnd->modify(getTimeOffset($timezone, $map));
+      $date->modify($this->getTimeOffset($timezone, $map)); 
+      $dateEnd->modify($this->getTimeOffset($timezone, $map));
 
       //redundant with new implement
       /*
