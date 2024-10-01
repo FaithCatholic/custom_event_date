@@ -118,9 +118,9 @@ class CustomDateRangeAllDayDefaultFormatter extends FormatterBase {
 
 
       if ($end_date && $end_time) {
-        $end_month = $dateEnd->format('M');
-        $end_day = $dateEnd->format('d');
-        $end_time = $dateEnd->format('g:iA T'); 
+        $end_month = '<span class="end month">'. $dateEnd->format('M'). '</span>';
+        $end_day = '<span class="end day">'. $dateEnd->format('d'). '</span>';
+        $end_time = '<span class="end time">'. $dateEnd->format('g:iA T'). '</span>'; 
       }
 
       if ($start_date == $end_date) {
