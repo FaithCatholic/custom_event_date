@@ -123,7 +123,7 @@ class CustomDateRangeAllDayDefaultFormatter extends FormatterBase {
         $end_time = '<span class="end time">'. $dateEnd->format('g:iA T'). '</span>'; 
       }
 
-      if ($start_date == $end_date) {
+      if (($date->format('M,d')) == ($dateEnd->format('M,d'))) {
         if ($all_day) {
           $markup = $start_month .' '. $start_day;
           $markup .= '<div class="secondary">All Day</div>';
