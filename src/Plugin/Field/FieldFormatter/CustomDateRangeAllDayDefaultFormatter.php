@@ -81,6 +81,12 @@ class CustomDateRangeAllDayDefaultFormatter extends FormatterBase {
     
 
     foreach ($items as $delta => $item) {
+      // Skip items without a start date.
+      if (empty($item->value)) {
+        continue;
+      }
+      $end_date = $end_time = $end_month = $end_day = NULL;
+
       list($start_date, $start_time) = explode('T', $this->viewValue($item));
       if (method_exists($this, 'viewEndValue') && $this->viewEndValue($item)) {
         list($end_date, $end_time) = explode('T', $this->viewEndValue($item));
@@ -97,7 +103,8 @@ class CustomDateRangeAllDayDefaultFormatter extends FormatterBase {
       
       //creates DrupalDateTime objects for date initial and end
       $date = new DrupalDateTime($this->viewValue($item));
-      $dateEnd = new DrupalDateTime($this->viewEndValue($item));
+      // Ranges without an end date are treated as ending on the start date.
+      $dateEnd = new DrupalDateTime($this->viewEndValue($item) ?: $this->viewValue($item));
       $timezone = $date->format('T'); //grabs timezone from object
       
       //calls function to correct the time difference
@@ -166,7 +173,7 @@ class CustomDateRangeAllDayDefaultFormatter extends FormatterBase {
    *   The textual output generated.
    */
   protected function viewValue(FieldItemInterface $item) {
-    return nl2br(Html::escape($item->value));
+    return nl2br(Html::escape($item->value ?? ''));
   }
 
   /**
@@ -179,7 +186,7 @@ class CustomDateRangeAllDayDefaultFormatter extends FormatterBase {
    *   The textual output generated.
    */
   protected function viewEndValue(FieldItemInterface $item) {
-    return nl2br(Html::escape($item->end_value));
+    return nl2br(Html::escape($item->end_value ?? ''));
   }
 
 }
